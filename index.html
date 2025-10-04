@@ -2,14 +2,14 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Trung Thu Heart Show 💗 Pink Gentle Edition</title>
+<title>Trung Thu Heart Show 💗 Soft WOW Edition</title>
 <style>
   html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     overflow: hidden;
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    background: radial-gradient(ellipse at bottom, #141c26 0%, #0a0b0e 100%);
     font-family: 'Poppins', sans-serif;
   }
 
@@ -53,13 +53,9 @@
     pointer-events: none;
   }
 
-  .heart {
-    animation: fall 6s linear forwards;
-  }
+  .heart { animation: fall 6s linear forwards; }
 
-  .falling-img {
-    animation: fallRotate 8s linear forwards;
-  }
+  .falling-img { animation: fallRotate 8s linear forwards; }
 
   @keyframes fall {
     0% { transform: translateY(-100px); opacity: 1; }
@@ -114,7 +110,7 @@ moonCake.addEventListener("click", async () => {
   try {
     await music.play();
   } catch {
-    alert("👉 Bấm OK để bật nhạc Trung Thu 🎶");
+    // không cần alert nữa, chỉ chơi nhạc khi click
     await music.play();
   }
 
@@ -132,19 +128,24 @@ moonCake.addEventListener("click", async () => {
 // === THREE.JS SCENE ===
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
 camera.position.z = 6;
 
-// Ánh sáng dịu
-const ambient = new THREE.AmbientLight(0xffffff, 0.25);
+// Ánh sáng mềm ấm
+const ambient = new THREE.AmbientLight(0xffe6f0, 0.3);
 scene.add(ambient);
+
+const softLight = new THREE.PointLight(0xffaacc, 1.2, 20);
+softLight.position.set(0, 2, 3);
+scene.add(softLight);
 
 // Background
 const loader = new THREE.TextureLoader();
 loader.load("https://threejs.org/examples/textures/space/starfield.jpg", tex => { scene.background = tex; });
 
-// ❤️ HEART (màu hồng nhạt dịu)
+// ❤️ HEART màu hồng nhạt mịn
 const heartGroup = new THREE.Group();
 scene.add(heartGroup);
 
@@ -173,42 +174,41 @@ function createHeartLayer(pointCount, size, opacity, colorTone) {
   return new THREE.Points(g, m);
 }
 
-// 💗 màu hồng pastel dịu nhẹ
+// 💗 Màu pastel hồng dịu sáng trong
 const heartCore = createHeartLayer(12000, 0.05, 0.85, "#f7b6c8");
 const heartAura = createHeartLayer(4000, 0.08, 0.45, "#f8c6d3");
-const heartGlow = createHeartLayer(1500, 0.12, 0.25, "#fce0eb");
-
+const heartGlow = createHeartLayer(1500, 0.12, 0.25, "#fde1ec");
 heartGroup.add(heartCore, heartAura, heartGlow);
 
-// Halo nhẹ dịu
+// Halo ánh sáng mịn xung quanh
 const haloTexture = new THREE.TextureLoader().load("https://threejs.org/examples/textures/lensflare/lensflare0.png");
 const halo = new THREE.Sprite(new THREE.SpriteMaterial({
-  map: haloTexture, transparent: true, opacity: 0.12, blending: THREE.NormalBlending, color: 0xf8d7e0
+  map: haloTexture, transparent: true, opacity: 0.15, blending: THREE.NormalBlending, color: 0xfdd8e6
 }));
-halo.scale.set(6.5, 6.5, 1);
+halo.scale.set(7.2, 7.2, 1);
 heartGroup.add(halo);
 
-// Orbit hạt
+// Hạt xoay quanh tim
 const orbitGroup = new THREE.Group();
-for (let i = 0; i < 80; i++) {
-  const geom = new THREE.SphereGeometry(0.05, 8, 8);
-  const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 });
+for (let i = 0; i < 100; i++) {
+  const geom = new THREE.SphereGeometry(0.04, 8, 8);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4 });
   const mesh = new THREE.Mesh(geom, mat);
   const radius = 2.5 + Math.random();
-  mesh.userData = { angle: Math.random() * Math.PI * 2, speed: 0.004 + Math.random() * 0.004, radius };
+  mesh.userData = { angle: Math.random() * Math.PI * 2, speed: 0.003 + Math.random() * 0.003, radius };
   mesh.position.set(Math.cos(mesh.userData.angle) * radius, Math.sin(mesh.userData.angle) * radius, 0);
   orbitGroup.add(mesh);
 }
 heartGroup.add(orbitGroup);
 
-// Spark dịu
+// Spark nhẹ và mềm hơn
 const sparks = [];
 function createSpark() {
   const g = new THREE.BufferGeometry();
   const v = [], c = [];
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 20; i++) {
     v.push((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
-    const col = new THREE.Color(`hsl(${Math.random() * 20 + 340}, 45%, 75%)`);
+    const col = new THREE.Color(`hsl(${Math.random() * 20 + 340}, 45%, 80%)`);
     c.push(col.r, col.g, col.b);
   }
   g.setAttribute('position', new THREE.Float32BufferAttribute(v, 3));
@@ -220,22 +220,23 @@ function createSpark() {
   sparks.push(s);
 }
 
-// Visualizer
+// WOW visualizer (tim đập nhẹ)
 function wowHeartVisualizer() {
   requestAnimationFrame(wowHeartVisualizer);
   if (!analyser) return;
   analyser.getByteFrequencyData(dataArray);
   const avg = dataArray.reduce((a,b)=>a+b) / bufferLength / 255;
-  const scale = 1 + avg * 0.25;
+  const scale = 1 + avg * 0.3;
   heartGroup.scale.set(scale, scale, scale);
 
-  halo.material.opacity = 0.1 + avg * 0.1;
+  halo.material.opacity = 0.1 + avg * 0.15;
+  softLight.intensity = 0.8 + avg * 0.8;
 
   orbitGroup.children.forEach(p => {
     p.userData.angle += p.userData.speed;
     p.position.x = Math.cos(p.userData.angle) * p.userData.radius;
     p.position.y = Math.sin(p.userData.angle) * p.userData.radius;
-    p.material.opacity = 0.3 + Math.sin(p.userData.angle * 3) * 0.2;
+    p.material.opacity = 0.25 + Math.sin(p.userData.angle * 3) * 0.25;
   });
 
   if (avg > 0.4 && Math.random() > 0.8) createSpark();
@@ -256,12 +257,12 @@ wowHeartVisualizer();
 // Xoay tim
 function rotateHeartWOW() {
   requestAnimationFrame(rotateHeartWOW);
-  heartGroup.rotation.y += 0.008;
-  heartGroup.rotation.x += 0.004;
+  heartGroup.rotation.y += 0.006;
+  heartGroup.rotation.x += 0.003;
 }
 rotateHeartWOW();
 
-// 🌕 Mặt trăng & pháo hoa & hiệu ứng nền giữ nguyên
+// 🌕 Mặt trăng và pháo hoa giữ nguyên nhưng mịn hơn
 const moon = new THREE.Mesh(new THREE.SphereGeometry(1,32,32), new THREE.MeshBasicMaterial({ color: 0xfff6cc }));
 moon.position.set(5,7,-10);
 scene.add(moon);
@@ -281,13 +282,13 @@ function createFirework(){
   }
   g.setAttribute('position', new THREE.Float32BufferAttribute(v,3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(c,3));
-  const m = new THREE.PointsMaterial({size:0.07, vertexColors:true, transparent:true, opacity:0.7});
+  const m = new THREE.PointsMaterial({size:0.07, vertexColors:true, transparent:true, opacity:0.6});
   const fw = new THREE.Points(g,m);
   fw.userData={life:0};
   scene.add(fw);
   fireworks.push(fw);
 }
-setInterval(createFirework, 2500);
+setInterval(createFirework, 2800);
 
 function animate(){
   requestAnimationFrame(animate);
@@ -296,7 +297,7 @@ function animate(){
     const fw=fireworks[i];
     fw.userData.life+=0.02;
     fw.scale.multiplyScalar(1.02);
-    fw.material.opacity-=0.01;
+    fw.material.opacity-=0.008;
     if(fw.material.opacity<=0){
       scene.remove(fw);
       fireworks.splice(i,1);
